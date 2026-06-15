@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Watchlist</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="movieBackdrop" class="movie-backdrop" aria-hidden="true"></div>
+  <aside class="resume-rail" aria-label="Resume entertainment">
+    <span>Let's resume the entertainment</span>
+    <a href="https://net11.cc/home" target="_blank" rel="noopener" aria-label="Open entertainment link">▶</a>
+  </aside>
+
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="Smart Watchlist home">SMARTWATCHLIST</a>
+      <div class="header-right">
+        <nav class="nav-actions" aria-label="Watchlist sections">
+          <button class="nav-link active" data-view="history">History</button>
+          <button class="nav-link" data-view="explore">Explore</button>
+          <button class="nav-link" data-view="genre">Genre</button>
+          <button class="nav-link" data-view="hidden">Hidden Gems</button>
+          <button class="nav-link" data-view="mood">Mood</button>
+          <button class="nav-link" data-view="ratings">Ratings</button>
+          <button class="nav-link" data-view="binge">Binge Calculator</button>
+          <button class="nav-link" data-view="personalized">Personalized for you</button>
+        </nav>
+        <div class="trophy-wrap">
+          <button id="trophyBtn" class="trophy-button" type="button" aria-label="View watch achievements">🏆</button>
+          <div id="trophyDropdown" class="trophy-dropdown">
+            <div class="trophy-item" data-level="0"><strong>Lead Trophy</strong><span>Rookie · 0+ watched</span></div>
+            <div class="trophy-item" data-level="20"><strong>Bronze Trophy</strong><span>Binge Watcher · 20+ watched</span></div>
+            <div class="trophy-item" data-level="50"><strong>Silver Trophy</strong><span>Screen Scholar · 50+ watched</span></div>
+            <div class="trophy-item" data-level="200"><strong>Gold Trophy</strong><span>Binge Final Boss · 200+ watched</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Your watch history, upgraded</p>
+          <h1>Build your taste profile, then find the next perfect watch.</h1>
+          <p class="hero-text">Keep watched titles in history, save future picks in To Watch, and browse by genre, mood, ratings, or personal recommendations.</p>
+        </div>
+      </section>
+
+      <section id="view-history" class="app-view active-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Library</p>
+            <h2>History</h2>
+          </div>
+          <button id="clearHistoryBtn" class="ghost-button danger" type="button">Clear history</button>
+        </div>
+        <div id="historyList" class="movie-grid-list"></div>
+      </section>
+
+      <section id="view-explore" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Search</p>
+            <h2>Explore</h2>
+          </div>
+        </div>
+        <form class="search-panel" id="searchForm">
+          <label for="query">Search movies or series to add into To Watch</label>
+          <div class="search-row">
+            <input id="query" placeholder="Try Iron Man, Breaking Bad, Interstellar..." autocomplete="off">
+            <button type="submit">Search</button>
+          </div>
+          <div id="searchSuggestions" class="suggestions" aria-label="Movie and series suggestions"></div>
+        </form>
+        <div class="section-subheading">
+          <h3>Search Results</h3>
+          <button id="clearResultsBtn" class="ghost-button" type="button">Clear</button>
+        </div>
+        <div id="results" class="movie-grid-list">
+          <div class="empty-state">Search for something you want to watch.</div>
+        </div>
+        <div class="section-subheading">
+          <h3>To Watch</h3>
+          <button id="clearToWatchBtn" class="ghost-button danger" type="button">Clear To Watch</button>
+        </div>
+        <div id="toWatchList" class="movie-grid-list compact-list"></div>
+      </section>
+
+      <section id="view-genre" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Browse</p>
+            <h2>Genre</h2>
+          </div>
+        </div>
+        <div id="genreGrid" class="genre-grid"></div>
+        <div class="section-subheading">
+          <h3 id="genreResultTitle">Pick a genre</h3>
+        </div>
+        <div id="genreResults" class="movie-grid-list"></div>
+      </section>
+
+      <section id="view-hidden" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Underrated</p>
+            <h2>Hidden Gems</h2>
+          </div>
+          <button id="refreshHiddenBtn" type="button">Refresh</button>
+        </div>
+        <div id="hiddenResults" class="movie-grid-list">
+          <div class="empty-state">Loading underrated picks...</div>
+        </div>
+      </section>
+
+      <section id="view-mood" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Feeling</p>
+            <h2>Mood</h2>
+          </div>
+        </div>
+        <div id="moodGrid" class="mood-grid"></div>
+        <div class="section-subheading">
+          <h3 id="moodResultTitle">Choose a mood</h3>
+        </div>
+        <div id="moodResults" class="movie-grid-list"></div>
+      </section>
+
+      <section id="view-ratings" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Top 10</p>
+            <h2>Best Rated by Genre</h2>
+          </div>
+        </div>
+        <div id="ratingTabs" class="tab-strip"></div>
+        <div id="ratingResults" class="ranked-list"></div>
+      </section>
+
+      <section id="view-binge" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Time check</p>
+            <h2>Binge Calculator</h2>
+          </div>
+          <button id="clearBingeBtn" class="ghost-button danger" type="button">Clear calculator</button>
+        </div>
+        <div id="bingeSummary" class="binge-summary"></div>
+        <div id="bingeList" class="movie-grid-list"></div>
+      </section>
+
+      <section id="view-personalized" class="app-view">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">For you</p>
+            <h2>Personalized Recommendations</h2>
+          </div>
+          <button id="refreshPersonalizedBtn" type="button">Refresh</button>
+        </div>
+        <div id="personalizedResults" class="movie-grid-list">
+          <div class="empty-state">Add a few watched titles to make this smarter.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-mark" aria-label="Smart Watchlist">
+        <span class="mark-line"><span>SMART</span><i></i></span>
+        <span class="mark-line"><b>WATCH</b><span>LIST</span></span>
+        <span class="mark-line"><i class="wide"></i><span>AI</span></span>
+      </div>
+      <div class="footer-credit">
+        <p>Made by Moonknight</p>
+        <a href="https://www.instagram.com/sarthak_chaudhari1477" target="_blank" rel="noopener">Instagram: sarthak_chaudhari1477</a>
+        <a href="https://github.com/idk14777741-creator" target="_blank" rel="noopener">GitHub: idk14777741-creator</a>
+        <span>Movie data powered by TMDB</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
