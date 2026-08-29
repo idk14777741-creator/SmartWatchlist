@@ -16,24 +16,24 @@
   ]);
 
   const genreCards = [
-    { name: 'Action', id: 28, poster: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg' },
+    { name: 'Action', id: 28, poster: '/78lPtwv72eTNqFW9COBYI0dWDJa.jpg' },
     { name: 'Comedy', id: 35, poster: '/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg' },
     { name: 'Thriller', id: 53, poster: '/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg' },
-    { name: 'Horror', id: 27, poster: '/rS97hUJ1otKTTripGwQ0ujbuIri.jpg' },
+    { name: 'Horror', id: 27, poster: '/3bhkrj58Vtu7enYsRolD1fZdja1.jpg' },
     { name: 'Adventure', id: 12, poster: '/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg' },
-    { name: 'Sci-Fi', id: 878, poster: '/d5NXSklXo0qyIYkgV94XAgMIckC.jpg' },
+    { name: 'Sci-Fi', id: 878, poster: '/or06FN3Dka5tukK1e9sl16pB3iy.jpg' },
     { name: 'Romance', id: 10749, poster: '/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg' },
     { name: 'Drama', id: 18, poster: '/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg' },
     { name: 'Mystery', id: 9648, poster: '/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg' },
-    { name: 'Animation', id: 16, poster: '/e1mjopzAS2KNsvpbpahQ1a6SkSn.jpg' },
+    { name: 'Animation', id: 16, poster: '/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg' },
     { name: 'Crime', id: 80, poster: '/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg' },
     { name: 'Fantasy', id: 14, poster: '/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg' },
-    { name: 'Family', id: 10751, poster: '/9BBTo63ANSmhC4e6r62OJFuK2GL.jpg' },
+    { name: 'Family', id: 10751, poster: '/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg' },
     { name: 'Documentary', id: 99, poster: '/uUiIGztTrfDhPdAFJpr6m4UBMAd.jpg' },
     { name: 'War', id: 10752, poster: '/b4Oe15CGLL61Ped0RAS9JpqdmCt.jpg' },
-    { name: 'Western', id: 37, poster: '/2o94tPI9vq8U4UUQ4nJ0ixq744C.jpg' },
-    { name: 'Music', id: 10402, poster: '/5lhCMZ1ccIIzylCgCYU216bbCcS.jpg' },
-    { name: 'History', id: 36, poster: '/8Gxv2wS6mext5u46aBFn67xd708.jpg' },
+    { name: 'Western', id: 37, poster: '/uxzzxijgPIY7slzFvMotPv8wjKA.jpg' },
+    { name: 'Music', id: 10402, poster: '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg' },
+    { name: 'History', id: 36, poster: '/5weKu49pzJCt06OPpjvT80efnQj.jpg' },
   ];
 
   const moodCards = [
@@ -47,6 +47,8 @@
     { name: 'Energetic', icon: '⚡', color: '#f97316', genres: '28,12,35', sort: 'popularity.desc' },
     { name: 'Melancholic', icon: '🍂', color: '#94a3b8', genres: '18,9648', sort: 'vote_average.desc' },
     { name: 'Peaceful', icon: '🕊️', color: '#14b8a6', genres: '16,10751,99', sort: 'vote_average.desc' },
+    { name: 'Quickies', icon: '⚡🎬', color: '#27c2e4', type: 'quickies' },
+    { name: 'Could Watch Again', icon: '🔄', color: '#22d3c5', type: 'watchagain' },
   ];
 
   const ratingGenres = [
@@ -98,6 +100,7 @@
   const ratingTabs = document.getElementById('ratingTabs');
   const ratingResults = document.getElementById('ratingResults');
   const personalizedResults = document.getElementById('personalizedResults');
+
   const clearHistoryBtn = document.getElementById('clearHistoryBtn');
   const clearToWatchBtn = document.getElementById('clearToWatchBtn');
   const clearResultsBtn = document.getElementById('clearResultsBtn');
@@ -112,12 +115,16 @@
   const hiddenResults = document.getElementById('hiddenResults');
   const trophyBtn = document.getElementById('trophyBtn');
   const trophyDropdown = document.getElementById('trophyDropdown');
+  const congratulations = document.getElementById('congratulations');
+  const congratulationsTitle = document.getElementById('congratulationsTitle');
+  const congratulationsMessage = document.getElementById('congratulationsMessage');
 
   let history = loadJSON('watchHistory') || migrateOldWatchlist();
   let toWatch = loadJSON('toWatch') || [];
   let bingeListArray = loadJSON('bingeList') || [];
   let suggestionTimer = null;
   let latestSuggestionQuery = '';
+  let trophyWatchedCount = loadJSON('trophyWatchedCount');
 
   navButtons.forEach((button) => {
     button.addEventListener('click', () => showView(button.dataset.view));
@@ -181,6 +188,11 @@
   
   refreshHiddenBtn.addEventListener('click', loadHiddenGems);
 
+  document.getElementById('closeCongratulations').addEventListener('click', hideCongratulations);
+  congratulations.addEventListener('click', (event) => {
+    if (event.target === congratulations) hideCongratulations();
+  });
+
   trophyBtn.addEventListener('click', (event) => {
     event.stopPropagation();
     trophyDropdown.classList.toggle('show');
@@ -209,6 +221,7 @@
     if (viewName === 'personalized') renderPersonalized();
     if (viewName === 'hidden' && hiddenResults.querySelector('.empty-state')) loadHiddenGems();
     if (viewName === 'binge') renderBinge();
+
   }
 
   function saveAll() {
@@ -355,6 +368,7 @@
       history.unshift({ ...title, status: 'Watched', watchedAt: Date.now() });
     }
     saveAll();
+    updateTrophies(true);
     renderToWatch();
     renderHistory();
   }
@@ -457,6 +471,12 @@
     const inHistory = history.some((x) => x.id === item.id && x.media_type === item.media_type);
     const inBinge = bingeListArray.some((x) => x.id === item.id && x.media_type === item.media_type);
 
+    const fadeButton = (btn) => {
+      btn.style.transition = 'opacity 200ms ease';
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+    };
+
     // 1. To Watch Button
     const watchBtn = document.createElement('button');
     watchBtn.type = 'button';
@@ -471,8 +491,9 @@
     } else {
       watchBtn.textContent = '+ To Watch';
       watchBtn.addEventListener('click', () => {
+        fadeButton(watchBtn);
         addToWatch(item);
-        replaceActions(actions, item);
+        setTimeout(() => replaceActions(actions, item), 250);
       });
     }
     actions.appendChild(watchBtn);
@@ -488,8 +509,9 @@
       watchedBtn.textContent = 'Watched';
       watchedBtn.className = 'ghost-button';
       watchedBtn.addEventListener('click', () => {
+        fadeButton(watchedBtn);
         markWatched(item);
-        replaceActions(actions, item);
+        setTimeout(() => replaceActions(actions, item), 250);
       });
     }
     actions.appendChild(watchedBtn);
@@ -500,8 +522,9 @@
     bingeBtn.className = inBinge ? 'binge-active-btn' : 'ghost-button';
     bingeBtn.textContent = inBinge ? 'Binge ✔' : '+ Binge';
     bingeBtn.addEventListener('click', () => {
+      fadeButton(bingeBtn);
       toggleBinge(item);
-      replaceActions(actions, item);
+      setTimeout(() => replaceActions(actions, item), 250);
     });
     actions.appendChild(bingeBtn);
 
@@ -605,6 +628,7 @@
   }
 
   async function loadGenre(genre) {
+    [...genreGrid.children].forEach((button) => button.classList.toggle('is-used', button.textContent === genre.name));
     genreResultTitle.textContent = `${genre.name} picks`;
     genreResults.innerHTML = '<div class="empty-state">Loading titles...</div>';
 
@@ -666,8 +690,11 @@
   }
 
   async function loadMood(mood) {
-    moodResultTitle.textContent = `${mood.name} watchlist`;
-    moodResults.innerHTML = '<div class="empty-state">Finding the right mood...</div>';
+    [...moodGrid.children].forEach((button) => button.classList.toggle('is-used', button.textContent.includes(mood.name)));
+    moodResultTitle.textContent = `${mood.name} ${mood.type ? 'picks' : 'watchlist'}`;
+    moodResults.innerHTML = '<div class="empty-state">Loading...</div>';
+    if (mood.type === 'quickies') return loadQuickies();
+    if (mood.type === 'watchagain') return loadWatchAgain();
 
     try {
       const pages = ['1', '2', '3', '4'];
@@ -718,6 +745,7 @@
 
   async function loadRatings(genre) {
     [...ratingTabs.children].forEach((button) => button.classList.toggle('active', button.textContent === genre.name));
+    [...ratingTabs.children].forEach((button) => button.classList.toggle('is-used', button.textContent === genre.name));
     ratingResults.innerHTML = '<div class="empty-state">Loading top rated titles...</div>';
 
     try {
@@ -819,6 +847,49 @@
     }
   }
 
+  async function loadQuickies() {
+    moodResults.innerHTML = '<div class="empty-state">Finding short, excellent watches...</div>';
+    try {
+      const data = await tmdb('/discover/movie', {
+        language: 'en-US',
+        include_adult: 'false',
+        sort_by: 'popularity.desc',
+        'with_runtime.lte': '100',
+        'with_runtime.gte': '70',
+        vote_count_gte: '500',
+      });
+      const titles = (data.results || [])
+        .filter((item) => item.poster_path)
+        .map((item) => normalizeTitle({ ...item, media_type: 'movie' }));
+      renderMovieList(moodResults, titles, { empty: 'No quickies found. Try again.', isDiscover: true });
+    } catch (error) {
+      console.error(error);
+      moodResults.innerHTML = '<div class="warn">Could not load quickies right now.</div>';
+    }
+  }
+
+  async function loadWatchAgain() {
+    moodResults.innerHTML = '<div class="empty-state">Loading iconic rewatches...</div>';
+    const rewatchClassics = [
+      { id: 155, title: 'The Dark Knight', media_type: 'movie', poster_path: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg', vote_average: 9.0, overview: 'When a menace known as the Joker wreaks havoc and chaos on Gotham.' },
+      { id: 27205, title: 'Inception', media_type: 'movie', poster_path: '/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg', vote_average: 8.8, overview: 'A skilled thief who steals corporate secrets through dream-sharing technology.' },
+      { id: 278, title: 'The Shawshank Redemption', media_type: 'movie', poster_path: '/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', vote_average: 9.3, overview: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption.' },
+      { id: 680, title: 'Pulp Fiction', media_type: 'movie', poster_path: '/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', vote_average: 8.9, overview: 'Various interconnected stories of Los Angeles criminals, framed around one story.' },
+      { id: 550, title: 'Fight Club', media_type: 'movie', poster_path: '/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg', vote_average: 8.8, overview: 'An insomniac office worker and a devil-may-care soap maker form an underground fight club.' },
+      { id: 238, title: 'The Godfather', media_type: 'movie', poster_path: '/3bhkrj58Vtu7enYsRolD1fZdja1.jpg', vote_average: 9.2, overview: 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire.' },
+      { id: 157336, title: 'Interstellar', media_type: 'movie', poster_path: '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', vote_average: 8.7, overview: 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity survival.' },
+      { id: 603, title: 'The Matrix', media_type: 'movie', poster_path: '/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg', vote_average: 8.7, overview: 'A computer hacker learns from mysterious rebels about the true nature of his reality.' },
+      { id: 769, title: 'The Godfather Part II', media_type: 'movie', poster_path: '/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg', vote_average: 9.0, overview: 'The continuing saga of the Corleone crime family.' },
+      { id: 13, title: 'Forrest Gump', media_type: 'movie', poster_path: '/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg', vote_average: 8.8, overview: 'The presidencies of Kennedy and Johnson unfold through the perspective of an Alabama man.' },
+      { id: 496243, title: 'Dune', media_type: 'movie', poster_path: '/d5NXSklXo0qyIYkgV94XAgMIckC.jpg', vote_average: 8.0, overview: 'Paul Atreides travels to the dangerous planet Arrakis to ensure the future of his family.' },
+    ];
+    const titles = rewatchClassics.map((item) => normalizeTitle(item));
+    renderMovieList(moodResults, titles, {
+      empty: 'True rewatchable classics that never get old.',
+      isDiscover: true,
+    });
+  }
+
   function mostCommonGenreId() {
     const counts = new Map();
     history.forEach((item) => {
@@ -867,10 +938,13 @@
     }
   }
 
-  function updateTrophies() {
+  function updateTrophies(announce = false) {
     if (!trophyDropdown) return;
     const watchedCount = history.length;
     const trophyItems = trophyDropdown.querySelectorAll('.trophy-item');
+    const previousCount = trophyWatchedCount === null ? watchedCount : trophyWatchedCount;
+    const newlyUnlocked = [...trophyItems]
+      .filter((item) => watchedCount >= parseInt(item.dataset.level, 10) && previousCount < parseInt(item.dataset.level, 10));
 
     trophyItems.forEach((item) => {
       const level = parseInt(item.dataset.level, 10);
@@ -887,6 +961,25 @@
       statusSpan.textContent = isUnlocked ? ' ✨' : ' 🔒';
       item.querySelector('strong').appendChild(statusSpan);
     });
+
+    trophyWatchedCount = watchedCount;
+    saveJSON('trophyWatchedCount', trophyWatchedCount);
+    if (announce && newlyUnlocked.length) {
+      const names = newlyUnlocked.map((item) => item.querySelector('strong').textContent.trim()).join(' and ');
+      showCongratulations(names);
+    }
+  }
+
+  function showCongratulations(trophyNames) {
+    congratulationsTitle.textContent = 'Congratulations!';
+    congratulationsMessage.textContent = `You unlocked ${trophyNames}. Keep building your watch history!`;
+    congratulations.classList.add('show');
+    congratulations.setAttribute('aria-hidden', 'false');
+  }
+
+  function hideCongratulations() {
+    congratulations.classList.remove('show');
+    congratulations.setAttribute('aria-hidden', 'true');
   }
 
   async function loadHiddenGems() {
